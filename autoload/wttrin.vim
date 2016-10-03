@@ -8,6 +8,7 @@ set cpoptions&vim
 
 let s:V = vital#wttrin#new()
 let s:OptionParser = s:V.import('OptionParser')
+let s:HTTP = s:V.import('Web.HTTP')
 
 if !exists('g:wttrin#default_location')
   let g:wttrin#default_location = ''
@@ -24,6 +25,7 @@ endfunction
 function! wttrin#main(q_args) abort
   let l:parsed_args = s:parse_args(a:q_args)
   let l:location = s:get_location(l:parsed_args)
+  let l:content = s:send_request(l:location)
 endfunction
 
 function! s:parse_args(q_args) abort
@@ -36,6 +38,20 @@ function! s:get_location(parsed_args) abort
   else
     return g:wttrin#default_location
   endif
+endfunction
+
+function! s:send_request(location) abort
+  let l:settings = {
+        \   'url' : 'http://wttr.in/' . a:location,
+        \   'client' : [
+        \     'curl',
+        \     'wget',
+        \   ],
+        \ }
+
+  let l:response = s:HTTP.request(l:settings)
+
+  return l:response['content']
 endfunction
 
 let &cpoptions = s:save_cpoptions
