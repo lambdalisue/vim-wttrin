@@ -54,5 +54,9 @@ function! s:send_request(location) abort
   return l:response['content']
 endfunction
 
+function! s:remove_ansi_sequences(text) abort
+  return substitute(a:text, '\e\[\%(\%(\d\+;\)*\d\+\)\?[mK]', '', 'g')
+endfunction
+
 let &cpoptions = s:save_cpoptions
 unlet s:save_cpoptions
